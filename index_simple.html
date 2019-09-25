@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Twitter Archive rough draft Simple Index </title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+
+    <style>
+      * {
+        font-family: sans-serif;
+      }
+      .tweet {
+        border: 1px solid grey;
+        border-radius: 4px;
+        display: block;
+        padding: 8px;
+        margin: 4px;
+        max-width: 800px;
+      }
+      .date {
+        font-size: 0.8em;
+        color: grey;
+      }
+      .defaultList {
+        display: none;
+      }
+    </style>
+    <script type="text/javascript"> 
+       function getSorted(selector, attrName) {
+          return $($(selector).toArray().sort(function(a, b){
+              var aVal = parseInt(a.getAttribute(attrName)),
+                  bVal = parseInt(b.getAttribute(attrName));
+              return aVal - bVal;
+          
+       }))};
+
+       function window_loaded(){
+       $sorted_items = getSorted('.halfmonty', 'data-index-number').clone();
+
+       $('#sorted_tweets').html( $sorted_items );
+
+        var spacestr = "<br/><br/><br/><br/><br/><br/><br/><br/><br/>";
+        spacestr =spacestr.repeat(300);
+        $('#spacer').html( spacestr );
+
+       }
+ 
+    </script>
+  </head>
+  <body onload="window_loaded()">
+    <div id="root"></div> 
+     
+    <script type="text/javascript">
+      window.YTD = {
+        tweet: {},
+        account: {},
+      }
+    </script>
+    <script type="text/javascript" src="./tweet.js"></script>
+    <script type="text/javascript" src="./account.js"></script>
+    <script type="text/babel">
+      const accountName = window.YTD.account.part0[0].account.username;
+      const createdDate = new Date(parseInt(window.YTD.account.part0[0].account.createdAt));
+       
+      const tweets = window.YTD.tweet.part0;
+      const twitlinkPre = "https://twitter.com/"+accountName+"/status/";
+       
+
+     
+      for (var i = 0; i <= window.YTD.tweet.part0.length-1; i++) {
+       
+        //my eyes.. they b leed ee ee eeed. 
+        // This is all hacked together just to get some data out of it quick and dirty. Emphasis dirty.   
+
+        var newDiv = document.createElement("div");  
+        newDiv.className += " tweet halfmonty";
+        var idnode = document.createTextNode(window.YTD.tweet.part0[i].id + " ");  
+        newDiv.appendChild(idnode);  
+        newDiv.dataset.indexNumber = Date.parse(window.YTD.tweet.part0[i].created_at);
+        
+        var link = document.createElement('a');
+          
+          link.href = twitlinkPre+window.YTD.tweet.part0[i].id;
+          link.text = window.YTD.tweet.part0[i].id
+          link.target = "_blank"
+        newDiv.appendChild(link);  
+
+        var dateNode = document.createTextNode(" "+window.YTD.tweet.part0[i].created_at + " ");  
+        dateNode.className += " date"; 
+        newDiv.appendChild(dateNode);  
+
+        
+
+        var newContent = document.createTextNode(window.YTD.tweet.part0[i].full_text);  
+        newDiv.appendChild(newContent);  
+        var brnode = document.createElement('br');
+        newDiv.appendChild(brnode);  
+
+        var currentDiv = document.getElementById("endoflinks"); 
+        document.body.insertBefore(newDiv, currentDiv); 
+
+
+        // Create a <li> node
+        var node = document.createElement("LI"); 
+        var textnode = document.createTextNode(window.YTD.tweet.part0[i].id);         // Create a text node 
+        node.appendChild(textnode);  
+        node.dataset.indexNumber = Date.parse(window.YTD.tweet.part0[i].created_at);
+        // Append the text to <li>
+        document.getElementById("myList").appendChild(node); 
+
+        var node2 = document.createElement("LI");                 // Create a <li> node
+        var textnode2 = document.createTextNode(window.YTD.tweet.part0[i].id +" "+ window.YTD.tweet.part0[i].created_at+ "  "+ window.YTD.tweet.part0[i].full_text);         // Create a text node
+        node2.appendChild(textnode2);    
+        node2.dataset.columns = 1;                          // Append the text to <li>
+        node2.dataset.indexNumber = Date.parse(window.YTD.tweet.part0[i].created_at);
+        document.getElementById("listWText").appendChild(node2); 
+
+        //listWDate
+        var node3 = document.createElement("LI");                 // Create a <li> node
+        var textnode3 = document.createTextNode(window.YTD.tweet.part0[i].id +", "+ window.YTD.tweet.part0[i].created_at);         // Create a text node
+        node3.appendChild(textnode3);                              // Append the text to <li>
+        node3.dataset.columns = 1;                          // Append the text to <li>
+        node3.dataset.indexNumber = Date.parse(window.YTD.tweet.part0[i].created_at);
+        document.getElementById("listWDate").appendChild(node3); 
+      }
+      
+    //Trying out autosort from ian on: https://stackoverflow.com/questions/21600802/jquery-sort-list-based-on-data-attribute-value
+    $(".listitems").each(function(){
+        $(this).html($(this).children('li').sort(function(a, b){
+          return ($(b).data('index-number')) < ($(a).data('index-number')) ? 1 : -1;
+        }));
+      });
+
+
+
+      function hidewText(){
+        var x = document.getElementById("listWText");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+        } else {
+          x.style.display = "none";
+        }
+      };
+
+      function hidemyList(){
+        var x = document.getElementById("myList");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+        } else {
+          x.style.display = "none";
+        }
+      };
+
+      function hidewDate(){
+        var x = document.getElementById("listWDate");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+        } else {
+          x.style.display = "none";
+        }
+      };
+
+  
+      
+    </script>
+   
+  <h1>This is a simple setup to display your local twitter archive</h1>
+  <div>Since twitter doesn't give you the data in a csv format anymore this index page lets you see all your tweets at once (sorted) and search through them (ctrl-f)
+    <br><br>
+    This index page is very utilitarian and if you have improvements please do a pull request on it. <a href='https://gist.github.com/johnaho/22cfd8d1768cd9e709715158b2194aa8'>this page on github</a>
+    <br>
+    What's here? There are three lists and below the lists is the full text of all your tweets Sorted with a link to that twitter status.
+    Those three lists are hidden by default. That's because they are fairly long and mostly usefull if you are going to copy and paste the data to excel or some other editor.
+  </div>
+  <div id="top">
+    <h3>Toggle lists</h3>
+    <h4>By default they are hidden</h4>
+    <span>These lists are just here to help with data transformation. The list id with date is usefull to put into a spreadsheet so you can order tweets by date</span>
+    <br/>
+    <button onclick="hidewText()" >toggle list with date & text</button>
+    <button onclick="hidemyList()" >toggle id list</button>
+    <button onclick="hidewDate()" >toggle id list with date</button>
+  </div>
+  <div>
+      <a href="#top">to top</a> 
+      <a href="#tweetswLink"> To sorted tweets with links to twitter</a>
+      <a href="#unsortedtweets"> To unsorted tweets</a>
+    <br/>
+    
+  </div>
+    <div>
+      <h3>List with text</h3>
+      <ul id="listWText"  class="listitems autosort defaultList">
+
+      </ul>
+    </div>
+    <hr>
+    <div>
+        <a href="#top">to top</a> 
+        <a href="#tweetswLink"> To sorted tweets with links to twitter</a>
+        <br/>
+        
+      </div>
+    <hr>
+    <div>
+        <h3>List with just ID's</h3>
+      <ul id="myList"   class="listitems autosort defaultList">
+
+      </ul>
+    </div>
+    <hr>
+    <div>
+        <a href="#top">to top</a> 
+        <a href="#tweetswLink"> To sorted tweets with links to twitter</a>
+        <br/>
+        
+      </div>
+    <hr>
+    <hr>
+    <div>
+        <h3>List with ID & dates</h3> Some formatting is required in your spreadsheet to paste this into. You want to format the first column as text and the second column as Date with a comma separating it in the wizard.
+      <ul id="listWDate"  class="listitems autosort defaultList">
+
+      </ul>
+    </div>
+    <hr>
+    <div>
+        <a href="#top">to top</a> 
+        <a href="#tweetswLink">To sorted tweets with links to twitter</a>
+        <br/>
+      </div>
+    <hr>
+    <h1 id="tweetswLink">Below are all your tweets -sorted order WITH links to your twitter post</h1>
+    <div id="sorted_tweets">
+        
+      </div>
+    
+    <div id="spacer"></div>
+    <div id="unsortedtweets"><h3>Below here are the unsorted tweets. Currently necessary due to hacky sorting algorithm</h3></div>
+    <div>
+        <a href="#top">to top</a> 
+        <a href="#tweetswLink">To sorted tweets with links to twitter</a>
+        <br/>
+      </div>
+    <div id="endoflinks"></div> 
+  </body>
+</html>
