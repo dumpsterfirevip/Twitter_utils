@@ -46,3 +46,11 @@ Specifically it currently needs to be in the same folder as tweet.js and account
 
 
 It's currently located here:   https://gist.github.com/johnaho/22cfd8d1768cd9e709715158b2194aa8
+
+
+**Viewing all your likes**
+
+This shows you all your likes in almost chronological order. The sort isn't all that great but it shows you your likes.
+To use this put this html file in the unzipped folder you got from twitter that has your archive .js files in it.
+
+https://github.com/johnaho/Twitter_utils/blob/master/likes.html
