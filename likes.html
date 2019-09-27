@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Twitter Archive - Likes Index </title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+
+    <style>
+      * {
+        font-family: sans-serif;
+      }
+      .tweet {
+        border: 1px solid grey;
+        border-radius: 4px;
+        display: block;
+        padding: 8px;
+        margin: 4px;
+        max-width: 800px;
+      }
+      .date {
+        font-size: 0.8em;
+        color: grey;
+      }
+      .defaultList {
+        display: none;
+      }
+    </style>
+    <script type="text/javascript"> 
+       function getSorted(selector, attrName) {
+          return $($(selector).toArray().sort(function(a, b){
+              var aVal = parseInt(a.getAttribute(attrName)),
+                  bVal = parseInt(b.getAttribute(attrName));
+              return aVal - bVal;
+          
+       }))};
+
+       function window_loaded(){
+       $sorted_items = getSorted('.halfmonty', 'data-index-number').clone();
+
+       $('#sorted_likes').html( $sorted_items );
+
+        var spacestr = "<br/><br/><br/><br/><br/><br/><br/><br/><br/>";
+        spacestr =spacestr.repeat(300);
+        $('#spacer').html( spacestr );
+
+       }
+ 
+    </script>
+  </head>
+  <body onload="window_loaded()">
+    <div id="root"></div> 
+     
+    <script type="text/javascript">
+      window.YTD = {
+        tweet: {},
+        account: {},
+        like: {}
+      }
+    </script>
+    <script type="text/javascript" src="./tweet.js"></script>
+    <script type="text/javascript" src="./account.js"></script>
+    <script type="text/javascript" src="./like.js"></script>
+    <script type="text/babel">
+      const accountName = window.YTD.account.part0[0].account.username;
+      const createdDate = new Date(parseInt(window.YTD.account.part0[0].account.createdAt));
+       
+      const tweets = window.YTD.tweet.part0;
+      const likes = window.YTD.like.part0;
+
+ 
+       
+
+     
+      for (var i = 0; i <= window.YTD.like.part0.length-1; i++) {
+       
+        //my eyes.. they b leed ee ee eeed. 
+        // This is all hacked together just to get some data out of it quick and dirty. Emphasis dirty.   
+        debugger;
+        var newDiv = document.createElement("div");  
+        newDiv.className += " tweet halfmonty";
+        var idnode = document.createTextNode(window.YTD.like.part0[i].like.tweetId + " ");  
+        newDiv.appendChild(idnode);  
+        newDiv.dataset.indexNumber = window.YTD.like.part0[i].like.tweetId;
+        
+
+        var link = document.createElement('a');
+          
+          link.href = window.YTD.like.part0[i].like.expandedUrl;
+          link.text = window.YTD.like.part0[i].like.tweetId
+          link.target = "_blank"
+        newDiv.appendChild(link);  
+
+  
+
+        
+
+        var newContent = document.createTextNode("  "+window.YTD.like.part0[i].like.fullText);  
+        newDiv.appendChild(newContent);  
+        var brnode = document.createElement('br');
+        newDiv.appendChild(brnode);  
+
+
+        
+
+
+
+        var currentDiv = document.getElementById("endoflinks"); 
+        document.body.insertBefore(newDiv, currentDiv); 
+
+            debugger;
+        // Create a <li> node
+        var node = document.createElement("LI"); 
+        var textnode = document.createTextNode(window.YTD.like.part0[i].like.tweetId);         // Create a text node 
+        node.appendChild(textnode);  
+        node.dataset.indexNumber = window.YTD.like.part0[i].like.tweetId;
+        // Append the text to <li>
+        document.getElementById("myList").appendChild(node); 
+
+
+ 
+      }
+      debugger;
+    //Trying out autosort from ian on: https://stackoverflow.com/questions/21600802/jquery-sort-list-based-on-data-attribute-value
+    $(".listitems").each(function(){
+        $(this).html($(this).children('li').sort(function(a, b){
+          return ($(b).data('index-number')) < ($(a).data('index-number')) ? 1 : -1;
+        }));
+      });
+
+ 
+
+      function hidemyList(){
+        var x = document.getElementById("myList");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+        } else {
+          x.style.display = "none";
+        }
+      };
+ 
+
+  
+      
+    </script>
+   
+  <h1>This is a simple setup to display your local twitter archive</h1>
+  <div>Since twitter doesn't give you the data in a csv format anymore this index page lets you see all your likes/favorites at once (sorted) and search through them (ctrl-f)
+    <br><br>
+    This index page is very utilitarian and if you have improvements please do a pull request on it. github</a>
+    <br>
+    What's here? There is a list below (hidden by default) and below the list is the full text of all your likes -kind of sorted.
+    The list is hidden by default. That's because it is fairly long and mostly usefull if you are going to copy and paste the data to excel or some other editor.
+  </div>
+  <div id="top">
+    <h3>Toggle list</h3>
+    <h4>By default they are hidden</h4>
+    <span>This list is just here to help with data transformation. </span>
+    <br/> 
+     <button onclick="hidemyList()" >toggle id list</button>  
+  </div>
+  <div>
+      <a href="#top">to top</a> 
+      <a href="#likeswLink"> To sorted likes with links to twitter</a>
+      <a href="#unsortedLikes"> To unsorted tweets</a>
+    <br/>
+    
+  </div>
+    
+    <div>
+        <h3>List with just ID's</h3>
+      <ul id="myList"   class="listitems autosort defaultList">
+
+      </ul>
+    </div>
+    <hr>
+    
+    <div>
+        <a href="#top">to top</a> 
+        <a href="#likeswLink">To sorted likes with links to twitter</a>
+        <br/>
+      </div>
+    <hr>
+    <h1 id="likeswLink">Below are all your likes -sorted order WITH links to your twitter post</h1>
+    <div id="sorted_likes">
+        
+      </div>
+    
+    <div id="spacer"></div>
+    <div id="unsortedLikes"><h3>Below here are the unsorted likes. Currently necessary due to hacky sorting algorithm</h3></div>
+    <div>
+        <a href="#top">to top</a> 
+        <a href="#likeswLink">To sorted likes with links to twitter</a>
+        <br/>
+      </div>
+    <div id="endoflinks"></div> 
+  </body>
+</html>
